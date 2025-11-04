@@ -20,7 +20,7 @@ SELECT
 	t.title AS "TITLE",
 	p.pub_name AS "PUBLISHER",
 	COUNT(t.title_id) AS "TITLE COUNT"
-FROM authors a, titles, publishers
+FROM authors a
 JOIN titleauthor ta ON a.au_id = ta.au_id
 JOIN titles t ON ta.title_id = t.title_id
 JOIN publishers p ON t.pub_id = p.pub_id
