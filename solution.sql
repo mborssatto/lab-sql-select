@@ -1,46 +1,42 @@
 --Challenge 1 - Who Have Published What At Where?
 
 SELECT
-	authors.au_id AS "AUTHOR ID",
-	authors.au_lname AS "LAST NAME",
-	authors.au_fname AS "FIRST NAME",
-	titles.title AS "TITLE",
-	publishers.pub_name AS "PUBLISHER"
-FROM authors, titles, publishers, titleauthor
-WHERE
-	authors.au_id == titleauthor.au_id AND
-	titleauthor.title_id == titles.title_id AND
-	titles.pub_id == publishers.pub_id;
+    a.au_id AS "AUTHOR ID",
+	a.au_lname AS "LAST NAME",
+	a.au_fname AS "FIRST NAME",
+	t.title AS "TITLE",
+	p.pub_name AS "PUBLISHER"
+FROM authors a
+JOIN titleauthor ta ON a.au_id = ta.au_id
+JOIN titles t ON ta.title_id = t.title_id
+JOIN publishers p ON t.pub_id = p.pub_id;
 
 -- Challenge 2 - Who Have Published How Many At Where?
 
 SELECT
-	authors.au_id AS "AUTHOR ID",
-	authors.au_lname AS "LAST NAME",
-	authors.au_fname AS "FIRST NAME",
-	titles.title AS "TITLE",
-	publishers.pub_name AS "PUBLISHER",
-	COUNT(titles.title_id) AS "TITLE COUNT"
-FROM authors, titles, publishers, titleauthor
-WHERE
-	authors.au_id == titleauthor.au_id AND
-	titleauthor.title_id == titles.title_id AND
-	titles.pub_id == publishers.pub_id
-GROUP BY titles.title;
-
+    a.au_id AS "AUTHOR ID",
+	a.au_lname AS "LAST NAME",
+	a.au_fname AS "FIRST NAME",
+	t.title AS "TITLE",
+	p.pub_name AS "PUBLISHER",
+	COUNT(t.title_id) AS "TITLE COUNT"
+FROM authors a, titles, publishers
+JOIN titleauthor ta ON a.au_id = ta.au_id
+JOIN titles t ON ta.title_id = t.title_id
+JOIN publishers p ON t.pub_id = p.pub_id
+GROUP BY a.au_id, a.au_lname, a.au_fname, p.pub_name;
 
 -- Challenge 3 - Best Selling Authors
 
 SELECT
-	authors.au_id AS "AUTHOR ID",
-	authors.au_lname AS "LAST NAME",
-	authors.au_fname AS "FIRST NAME",
-	SUM(sales.qty) AS "TOTAL"
-FROM authors, sales, titleauthor
-WHERE
-	authors.au_id == titleauthor.au_id AND
-	titleauthor.title_id == sales.title_id
-GROUP BY "AUTHOR ID"
+    a.au_id AS "AUTHOR ID",
+	a.au_lname AS "LAST NAME",
+	a.au_fname AS "FIRST NAME",
+	SUM(t.ytd_sales) AS "TOTAL"
+FROM authors a
+JOIN titleauthor ta ON a.au_id = ta.au_id
+JOIN titles t ON t.title_id = ta.title_id
+GROUP BY a.au_id, a.au_lname, a.au_fname
 ORDER BY "TOTAL" DESC
 LIMIT 3;
 
@@ -49,15 +45,14 @@ LIMIT 3;
 
 
 SELECT
-	authors.au_id AS "AUTHOR ID",
-	authors.au_lname AS "LAST NAME",
-	authors.au_fname AS "FIRST NAME",
-	COALESCE(SUM(sales.qty), 0) AS "TOTAL"
-FROM authors
-LEFT JOIN titleauthor ON authors.au_id = titleauthor.au_id
-LEFT JOIN titles ON titleauthor.title_id = titles.title_id
-LEFT JOIN sales ON sales.title_id = titleauthor.title_id
-GROUP BY "AUTHOR ID"
-ORDER BY "TOTAL" DESC
-LIMIT 23;
+    a.au_id AS "AUTHOR ID",
+	a.au_lname AS "LAST NAME",
+	a.au_fname AS "FIRST NAME",
+	COALESCE(SUM(t.ytd_sales), 0) AS "TOTAL"
+FROM authors a
+LEFT JOIN titleauthor ta ON a.au_id = ta.au_id
+LEFT JOIN titles t ON ta.title_id = t.title_id
+LEFT JOIN sales s ON s.title_id = ta.title_id
+GROUP BY a.au_id, a.au_lname, a.au_fname
+ORDER BY "TOTAL" DESC;
 
