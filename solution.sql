@@ -17,7 +17,6 @@ SELECT
     a.au_id AS "AUTHOR ID",
 	a.au_lname AS "LAST NAME",
 	a.au_fname AS "FIRST NAME",
-	t.title AS "TITLE",
 	p.pub_name AS "PUBLISHER",
 	COUNT(t.title_id) AS "TITLE COUNT"
 FROM authors a
